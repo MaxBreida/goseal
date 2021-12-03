@@ -1,0 +1,5 @@
+secret: my-secret
+password: really secret
+cert: qwertzuiop
+
+redis-secret.yaml: 1234567890123456789
