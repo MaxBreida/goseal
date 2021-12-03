@@ -21,8 +21,8 @@ func main() {
 			{
 				Name:        "yaml",
 				HelpName:    "yaml",
-				Description: "creates a sealed secret from yaml input",
-				Usage:       "Creates a secret file from yaml input",
+				Description: "creates a sealed secret from yaml input key-value pairs",
+				Usage:       "Create a secret file with key-value pairs as in the yaml file",
 				Aliases:     []string{"y"},
 				Flags:       getStandardFlags(),
 				Action:      Yaml,
@@ -30,12 +30,12 @@ func main() {
 			{
 				Name:        "file",
 				HelpName:    "file",
-				Description: "creates a sealed secret with a file as secret value",
-				Usage:       "Creates a secret file from file input",
+				Description: "creates a (sealed) kubernetes secret with a file as secret value",
+				Usage:       "Create a secret with a file as secret value.",
 				Flags: append(getStandardFlags(), &cli.StringFlag{
-					Name:    "cert",
-					Usage:   "if set, will run kubeseal with given cert",
-					Aliases: []string{"c"},
+					Name:    "key",
+					Usage:   "the secret key, under which the file can be accessed",
+					Aliases: []string{"k"},
 				}),
 				Action: File,
 			},
