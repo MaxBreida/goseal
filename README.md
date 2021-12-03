@@ -38,13 +38,13 @@ GLOBAL OPTIONS:
 
 ```text
 NAME:
-   yaml - Creates a secret file from yaml input
+   yaml - Create a secret file with key-value pairs as in the yaml file
 
 USAGE:
    yaml [command options] [arguments...]
 
 DESCRIPTION:
-   creates a sealed secret from yaml input
+   creates a sealed secret from yaml input key-value pairs
 
 OPTIONS:
    --help, -h                      show help (default: false)
