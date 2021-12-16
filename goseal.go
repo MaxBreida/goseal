@@ -33,9 +33,10 @@ func main() {
 				Description: "creates a (sealed) kubernetes secret with a file as secret value",
 				Usage:       "Create a secret with a file as secret value.",
 				Flags: append(getStandardFlags(), &cli.StringFlag{
-					Name:    "key",
-					Usage:   "the secret key, under which the file can be accessed",
-					Aliases: []string{"k"},
+					Name:     "key",
+					Usage:    "the secret key, under which the file can be accessed",
+					Aliases:  []string{"k"},
+					Required: true,
 				}),
 				Action: File,
 			},
