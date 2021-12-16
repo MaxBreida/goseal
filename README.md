@@ -11,6 +11,7 @@ goseal is a simple CLI tool to easily create kubernetes secrets using kubectl an
 ## Installation
 
 ```sh
+go get -u github.com/MaxBreida/goseal
 go install github.com/MaxBreida/goseal
 ```
 
