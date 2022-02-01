@@ -62,7 +62,7 @@ OPTIONS:
 To create an unsealed secret, run:
 
 ```sh
-goseal yaml -f my-file.yaml -s my-namespace -s my-secret > output.yaml
+goseal yaml -f my-file.yaml -n my-namespace -s my-secret > output.yaml
 ```
 
 To seal the secret, simply add the --cert or -c flag to the command:
@@ -98,11 +98,11 @@ OPTIONS:
 To create an unsealed secret, run:
 
 ```sh
-goseal file -f my-file.yaml -s my-namespace -s my-secret -k my-key > output.yaml
+goseal file -f my-file -n my-namespace -s my-secret -k my-key > output.yaml
 ```
 
 To seal the secret, simply add the --cert or -c flag to the command:
 
 ```sh
-goseal file -f my-file.yaml -n my-namespace -s my-secret -k my-key -c path/to/my/cert.pem > output.yaml
+goseal file -f my-file -n my-namespace -s my-secret -k my-key -c path/to/my/cert.pem > output.yaml
 ```
