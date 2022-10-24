@@ -12,6 +12,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
+const dirAffix = "/"
+
 var baseStyle = lipgloss.NewStyle().
 	BorderStyle(lipgloss.NormalBorder()).
 	BorderForeground(lipgloss.Color("240"))
@@ -26,6 +28,8 @@ func (m *model) Init() tea.Cmd { return nil }
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.table.SetHeight(msg.Height - 5)
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "esc":
@@ -39,7 +43,7 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "enter":
 			selection := m.table.SelectedRow()[0]
 
-			if strings.HasSuffix(selection, "/") {
+			if strings.HasSuffix(selection, dirAffix) {
 				m.currentDir = filepath.Join(m.currentDir, selection)
 				m.table.SetRows(getTableRowsFromDir(m.currentDir))
 				m.table.GotoTop()
@@ -94,7 +98,7 @@ func main() {
 	m := model{currentDir: currentDir, table: t}
 	if err := tea.NewProgram(
 		&m,
-		//tea.WithAltScreen(),
+		tea.WithAltScreen(),
 	).Start(); err != nil {
 		fmt.Println("Error running program:", err)
 		os.Exit(1)
@@ -102,12 +106,11 @@ func main() {
 }
 
 func getFileName(fileInfo os.FileInfo) string {
-	var dirAffix string
 	if fileInfo.IsDir() {
-		dirAffix = "/"
+		return fileInfo.Name() + dirAffix
 	}
 
-	return fileInfo.Name() + dirAffix
+	return fileInfo.Name()
 }
 
 func getTableRowsFromDir(dir string) []table.Row {
