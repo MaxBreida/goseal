@@ -19,6 +19,11 @@ func main() {
 		Usage: "Used to automatically generate kubernetes secret files (and optionally seal them)",
 		Commands: []*cli.Command{
 			{
+				Name:        "ui",
+				Description: "starts the goseal TUI",
+				Action:      startUI,
+			},
+			{
 				Name:        "yaml",
 				HelpName:    "yaml",
 				Description: "creates a sealed secret from yaml input key-value pairs",
