@@ -1,48 +1,137 @@
 package main
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
 
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/urfave/cli/v2"
 )
 
-type viewModel struct{}
+const dirAffix = "/"
 
-func (v viewModel) View() string {
-	return "Hello World"
+var baseStyle = lipgloss.NewStyle().
+	BorderStyle(lipgloss.NormalBorder()).
+	BorderForeground(lipgloss.Color("240"))
+
+type model struct {
+	currentDir string
+	table      table.Model
 }
 
-func (v viewModel) Init() tea.Cmd {
-	return nil
-}
+func (m *model) Init() tea.Cmd { return nil }
 
-func (v viewModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
-
-	// Is it a key press?
 	case tea.KeyMsg:
-
-		// Cool, what was the actual key pressed?
 		switch msg.String() {
+		case "esc":
+			if m.table.Focused() {
+				m.table.Blur()
+			} else {
+				m.table.Focus()
+			}
+		case "q", "ctrl+c":
+			return m, tea.Quit
+		case "enter":
+			selection := m.table.SelectedRow()[0]
 
-		// These keys should exit the program.
-		case "ctrl+c", "q":
-			return v, tea.Quit
+			if strings.HasSuffix(selection, dirAffix) {
+				m.currentDir = filepath.Join(m.currentDir, selection)
+				m.table.SetRows(getTableRowsFromDir(m.currentDir))
+				m.table.GotoTop()
+			} else {
+				return m, tea.Batch(
+					tea.Printf("Let's go to %s!", filepath.Join(m.currentDir, selection)),
+				)
+			}
+
+			// TODO pass file to next step
 		}
 	}
-
-	return v, nil
+	m.table, cmd = m.table.Update(msg)
+	return m, cmd
 }
 
-func startUI(c *cli.Context) error {
-	ui := tea.NewProgram(viewModel{})
+func (m *model) View() string {
+	return baseStyle.Render(m.table.View()) + "\n"
+}
 
-	if err := ui.Start(); err != nil {
-		return err
+func StartUI(c *cli.Context) error {
+	columns := []table.Column{
+		{Title: "Name", Width: 20},
+		{Title: "Size (B)", Width: 10},
+		{Title: "Date modified", Width: 20},
 	}
 
-	os.Exit(0)
+	currentDir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+
+	t := table.New(
+		table.WithColumns(columns),
+		table.WithRows(getTableRowsFromDir(currentDir)),
+		table.WithFocused(true),
+		table.WithHeight(7),
+	)
+
+	s := table.DefaultStyles()
+	s.Header = s.Header.
+		BorderStyle(lipgloss.NormalBorder()).
+		BorderForeground(lipgloss.Color("240")).
+		BorderBottom(true).
+		Bold(false)
+	s.Selected = s.Selected.
+		Foreground(lipgloss.Color("229")).
+		Background(lipgloss.Color("57")).
+		Bold(false)
+	t.SetStyles(s)
+
+	m := model{currentDir: currentDir, table: t}
+	if err := tea.NewProgram(
+		&m,
+		tea.WithAltScreen(),
+	).Start(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 
 	return nil
+}
+
+func getFileName(fileInfo os.FileInfo) string {
+	if fileInfo.IsDir() {
+		return fileInfo.Name() + dirAffix
+	}
+
+	return fileInfo.Name()
+}
+
+func getTableRowsFromDir(dir string) []table.Row {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+
+	rows := make([]table.Row, 0, len(entries)+1) // +1 for ..
+
+	rows = append(rows, table.Row{"../", "", ""})
+
+	for _, entry := range entries {
+		fileInfo, err := entry.Info()
+		if err != nil {
+			panic(err)
+		}
+
+		rows = append(rows, table.Row{getFileName(fileInfo), strconv.FormatInt(fileInfo.Size(), 10), fileInfo.ModTime().String()})
+	}
+
+	return rows
 }

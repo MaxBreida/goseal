@@ -21,7 +21,7 @@ func main() {
 			{
 				Name:        "ui",
 				Description: "starts the goseal TUI",
-				Action:      startUI,
+				Action:      StartUI,
 			},
 			{
 				Name:        "yaml",
