@@ -3,8 +3,9 @@ module github.com/MaxBreida/goseal
 go 1.16
 
 require (
-	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
+	github.com/charmbracelet/bubbles v0.14.0
 	github.com/charmbracelet/bubbletea v0.22.1
+	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/cpuguy83/go-md2man/v2 v2.0.1 // indirect
 	github.com/muesli/ansi v0.0.0-20211031195517-c9f0611b6c70 // indirect
 	github.com/muesli/termenv v0.13.0 // indirect
