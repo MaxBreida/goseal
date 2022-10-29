@@ -9,6 +9,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/MaxBreida/goseal/tui"
 	"github.com/urfave/cli/v2"
 	"gopkg.in/yaml.v2"
 )
@@ -22,7 +23,7 @@ func main() {
 			{
 				Name:        "ui",
 				Description: "starts the goseal TUI",
-				Action:      StartUI,
+				Action:      tui.StartUI,
 			},
 			{
 				Name:        "yaml",
