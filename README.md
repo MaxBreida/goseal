@@ -1,4 +1,4 @@
-# goseal
+# goseal 🦭
 
 goseal is a simple CLI tool to easily create kubernetes secrets using kubectl and kubeseal (optional).
 
