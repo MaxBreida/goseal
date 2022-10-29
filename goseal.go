@@ -15,8 +15,9 @@ import (
 
 func main() {
 	app := &cli.App{
-		Name:  "goseal",
-		Usage: "Used to automatically generate kubernetes secret files (and optionally seal them)",
+		Name:    "goseal",
+		Usage:   "Used to automatically generate kubernetes secret files (and optionally seal them)",
+		Version: "v0.2.0",
 		Commands: []*cli.Command{
 			{
 				Name:        "ui",
@@ -37,13 +38,13 @@ func main() {
 				HelpName:    "file",
 				Description: "creates a (sealed) kubernetes secret with a file as secret value",
 				Usage:       "Create a secret with a file as secret value.",
+				Action:      File,
 				Flags: append(getStandardFlags(), &cli.StringFlag{
 					Name:     "key",
 					Usage:    "the secret key, under which the file can be accessed",
 					Aliases:  []string{"k"},
 					Required: true,
 				}),
-				Action: File,
 			},
 		},
 	}
@@ -63,7 +64,7 @@ func getStandardFlags() []cli.Flag {
 			Name:     "namespace",
 			Usage:    "the namespace of the secret",
 			Required: true,
-			Aliases:  []string{"nsp"},
+			Aliases:  []string{"n"},
 		},
 		&cli.StringFlag{
 			Name:     "file",
@@ -72,10 +73,10 @@ func getStandardFlags() []cli.Flag {
 			Aliases:  []string{"f"},
 		},
 		&cli.StringFlag{
-			Name:     "name",
+			Name:     "secret-name",
 			Usage:    "the secret name",
 			Required: true,
-			Aliases:  []string{"n"},
+			Aliases:  []string{"s"},
 		},
 		&cli.StringFlag{
 			Name:    "cert",
@@ -85,16 +86,23 @@ func getStandardFlags() []cli.Flag {
 	}
 }
 
+// ErrEmptyFile is returned if the provided file has no content.
+var ErrEmptyFile = errors.New("file content is empty")
+
 // Yaml is a cli command
 func Yaml(c *cli.Context) error {
 	filePath := c.String("file")
 	namespace := c.String("namespace")
-	secretName := c.String("name")
+	secretName := c.String("secret-name")
 	certPath := c.String("cert")
 
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
+	}
+
+	if len(file) == 0 {
+		return ErrEmptyFile
 	}
 
 	var secrets map[string]string
@@ -115,12 +123,16 @@ func File(c *cli.Context) error {
 	filePath := c.String("file")
 	secretKey := c.String("key")
 	namespace := c.String("namespace")
-	secretName := c.String("name")
+	secretName := c.String("secret-name")
 	certPath := c.String("cert")
 
 	file, err := os.ReadFile(filePath)
 	if err != nil {
 		return err
+	}
+
+	if len(file) == 0 {
+		return ErrEmptyFile
 	}
 
 	secrets := map[string]string{secretKey: string(file)}
