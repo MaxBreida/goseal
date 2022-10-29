@@ -14,10 +14,6 @@ type filePicker struct {
 	table      table.Model
 }
 
-func (f *filePicker) Table() *table.Model {
-	return &f.table
-}
-
 const dirAffix = "/"
 
 var baseStyle = lipgloss.NewStyle().
@@ -70,7 +66,7 @@ func getTableRowsFromDir(dir string) []table.Row {
 		panic(err)
 	}
 
-	rows := make([]table.Row, 0, len(entries)+1) // +1 for ..
+	rows := make([]table.Row, 0, len(entries)+1) // +1 for
 
 	rows = append(rows, table.Row{"../", "", ""})
 
@@ -80,7 +76,10 @@ func getTableRowsFromDir(dir string) []table.Row {
 			panic(err)
 		}
 
-		rows = append(rows, table.Row{getFileName(fileInfo), strconv.FormatInt(fileInfo.Size(), 10), fileInfo.ModTime().String()})
+		rows = append(
+			rows,
+			table.Row{getFileName(fileInfo), strconv.FormatInt(fileInfo.Size(), 10), fileInfo.ModTime().String()},
+		)
 	}
 
 	return rows

@@ -110,7 +110,7 @@ func (m *model) View() string {
 	case viewStateFilePicker:
 		return fmt.Sprintf("%s\n\n%s\n",
 			baseStyle.Render(m.filePicker.table.View()),
-			navigationInfoText,
+			navigationInfoText, // TODO update text for first step
 		)
 	case viewStateNamespace:
 		return fmt.Sprintf(
@@ -137,6 +137,11 @@ func (m *model) View() string {
 }
 
 func StartUI(c *cli.Context) error {
+	// TODO maybe use one view for all text-inputs
+	// TODO add cert selection
+	// TODO move kubectl logic from goseal.go to kubectl.go
+	// TODO fix filepicker navigation
+
 	currentDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
