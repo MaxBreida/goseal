@@ -1,4 +1,4 @@
-package tui
+package main
 
 import (
 	"os"
@@ -10,8 +10,8 @@ import (
 )
 
 type filePicker struct {
-	currentDir string
-	table      table.Model
+	filePath string
+	table    table.Model
 }
 
 const dirAffix = "/"
@@ -31,7 +31,7 @@ func initFilePicker(dir string) *filePicker {
 		table.WithColumns(columns),
 		table.WithRows(getTableRowsFromDir(dir)),
 		table.WithFocused(true),
-		table.WithHeight(7),
+		table.WithHeight(15),
 	)
 
 	styles := table.DefaultStyles()
@@ -47,8 +47,8 @@ func initFilePicker(dir string) *filePicker {
 	mTable.SetStyles(styles)
 
 	return &filePicker{
-		currentDir: dir,
-		table:      mTable,
+		filePath: dir,
+		table:    mTable,
 	}
 }
 
@@ -86,8 +86,8 @@ func getTableRowsFromDir(dir string) []table.Row {
 }
 
 func (f *filePicker) navigateToCurrentSelection(msg tea.Msg, filePath string) tea.Cmd {
-	f.currentDir = filePath
-	f.table.SetRows(getTableRowsFromDir(f.currentDir))
+	f.filePath = filePath
+	f.table.SetRows(getTableRowsFromDir(f.filePath))
 	f.table.GotoTop()
 
 	return f.Update(msg)
