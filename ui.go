@@ -228,6 +228,8 @@ func (m *model) View() string {
 			b.WriteString(fileModes[i])
 			b.WriteString("\n")
 		}
+
+		b.WriteString("\n")
 		b.WriteString(navigationInfoText)
 
 		return b.String()
@@ -264,7 +266,7 @@ func (m *model) View() string {
 			panic(err)
 		}
 
-		return fmt.Sprintf("Secret sucessfully sealed. Filepath: %s/secret.yaml\n\n%s\n",
+		return fmt.Sprintf("Secret successfully sealed. Filepath: %s/secret.yaml\n\n%s\n",
 			wd,
 			"Press Enter or Ctrl+C to quit.",
 		)
