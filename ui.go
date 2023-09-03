@@ -275,22 +275,19 @@ func (m *model) View() string {
 
 // StartUI starts the TUI.
 func StartUI(c *cli.Context) error {
+	certDir := c.String("certificates-directory")
+
 	currentDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
-	if err := tea.NewProgram(
+	if err = tea.NewProgram(
 		&model{
 			currentState:     viewStateFilePicker,
 			secretFilePicker: initFilePicker(currentDir),
 			textInputs:       initTextInputs(),
-			certFilePicker:   initFilePicker(homeDir),
+			certFilePicker:   initFilePicker(certDir),
 		},
 		tea.WithAltScreen(),
 	).Start(); err != nil {
