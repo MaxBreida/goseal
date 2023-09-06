@@ -18,6 +18,7 @@ func main() {
 			{
 				Name:        "ui",
 				Description: "starts the goseal TUI",
+				Flags:       getUIFlags(),
 				Action:      StartUI,
 			},
 			{
@@ -49,6 +50,26 @@ func main() {
 
 	if err := app.Run(os.Args); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func getUIFlags() []cli.Flag {
+	homeDir, err := os.UserHomeDir()
+	if err != nil {
+		panic(err)
+	}
+
+	return []cli.Flag{
+		cli.BashCompletionFlag,
+		cli.HelpFlag,
+		&cli.StringFlag{
+			Name:        "certificates-directory",
+			Usage:       "the certificates directory",
+			Required:    false,
+			Aliases:     []string{"cd"},
+			Value:       homeDir,
+			DefaultText: "$HOME",
+		},
 	}
 }
 

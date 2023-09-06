@@ -228,6 +228,8 @@ func (m *model) View() string {
 			b.WriteString(fileModes[i])
 			b.WriteString("\n")
 		}
+
+		b.WriteString("\n")
 		b.WriteString(navigationInfoText)
 
 		return b.String()
@@ -264,7 +266,7 @@ func (m *model) View() string {
 			panic(err)
 		}
 
-		return fmt.Sprintf("Secret sucessfully sealed. Filepath: %s/secret.yaml\n\n%s\n",
+		return fmt.Sprintf("Secret successfully sealed. Filepath: %s/secret.yaml\n\n%s\n",
 			wd,
 			"Press Enter or Ctrl+C to quit.",
 		)
@@ -275,22 +277,19 @@ func (m *model) View() string {
 
 // StartUI starts the TUI.
 func StartUI(c *cli.Context) error {
+	certDir := c.String("certificates-directory")
+
 	currentDir, err := os.Getwd()
 	if err != nil {
 		panic(err)
 	}
 
-	homeDir, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
-
-	if err := tea.NewProgram(
+	if err = tea.NewProgram(
 		&model{
 			currentState:     viewStateFilePicker,
 			secretFilePicker: initFilePicker(currentDir),
 			textInputs:       initTextInputs(),
-			certFilePicker:   initFilePicker(homeDir),
+			certFilePicker:   initFilePicker(certDir),
 		},
 		tea.WithAltScreen(),
 	).Start(); err != nil {
