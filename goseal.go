@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/urfave/cli/v2"
@@ -17,7 +18,7 @@ func main() {
 	app := &cli.App{
 		Name:    "goseal",
 		Usage:   "Used to automatically generate kubernetes secret files (and optionally seal them)",
-		Version: "v0.2.0",
+		Version: "v0.3.0",
 		Commands: []*cli.Command{
 			{
 				Name:        "yaml",
@@ -139,6 +140,9 @@ func File(c *cli.Context) error {
 	return createSecret(secrets, secretName, namespace)
 }
 
+// regexCreationTimestamp is a regex used to remove the creationTimestamp from the output of kubectl create secret.
+var regexCreationTimestamp = regexp.MustCompile(`\s*creationTimestamp: null`)
+
 // runs the kubectl create secret command and prints the output to stdout.
 func createSecret(secrets map[string]string, secretName, namespace string) error {
 	kubectlCreateSecret := getCreateSecretFileCmd(secrets, secretName, namespace)
@@ -150,7 +154,10 @@ func createSecret(secrets map[string]string, secretName, namespace string) error
 		return err
 	}
 
-	fmt.Println(stdout.String())
+	outputWithCreationTimestamp := stdout.String()
+	output := regexCreationTimestamp.ReplaceAllString(outputWithCreationTimestamp, "")
+
+	fmt.Println(output)
 
 	return nil
 }
@@ -186,7 +193,10 @@ func sealSecret(secrets map[string]string, secretName, namespace, certPath strin
 		return errors.New(getErrText(err, kubeseal.Args, stderr.String()))
 	}
 
-	fmt.Println(stdout.String())
+	outputWithCreationTimestamp := stdout.String()
+	output := regexCreationTimestamp.ReplaceAllString(outputWithCreationTimestamp, "")
+
+	fmt.Println(output)
 
 	return nil
 }
